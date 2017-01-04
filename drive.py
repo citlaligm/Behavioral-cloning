@@ -16,22 +16,24 @@ from io import BytesIO
 from keras.models import model_from_json
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array
 
-def normalize(image_data):
-    """
-    Normalize the image data with Min-Max scaling to a range of [-0.5, 0.5]
-    :param image_data: The image data to be normalized
-    :return: Normalized image data
-    """
-    #costants
-    a = -0.5
-    b = 0.5
-    xmin = np.min(image_data)
-    xmax = np.max(image_data) 
+def crop_image(image):
+    #New sizes for image, suggested the Vivek in here 
+    #https://chatbotslife.com/using-augmentation-to-mimic-human-driving-496b569760a9#.n2mwq1z33
+    col, row = 200,66
     
-    x = image_data    
-    x_prime = a + ((x-xmin)*(b-a))/(xmax-xmin)
+    shape = image.shape
     
-    return x_prime
+    #Cut off the sky from the original picture
+    crop_up = shape[0]/3
+    
+    #Cut off the front of the car
+    crop_down = shape[0]-25
+
+    image = image[crop_up:crop_down, 0:shape[1]]
+    image = cv2.resize(image,(col,row), interpolation=cv2.INTER_AREA)    
+    return image
+
+
 
 sio = socketio.Server()
 app = Flask(__name__)
@@ -50,15 +52,8 @@ def telemetry(sid, data):
     imgString = data["image"]   
     image = Image.open(BytesIO(base64.b64decode(imgString)))
     image_array = np.asarray(image)
-    print(image_array.shape)
-    #image_array = image_array[0:66, 0:200]
-    image_array = cv2.resize(image_array,(200,66))
-    print(image_array.shape)
-    #image_array = lambda image_array: image_array/127.5 -1.
-    image_array = normalize(image_array)
-    print(image_array.shape)
-    #image_array = normalize(image_array)
-    transformed_image_array = image_array[None, :, :, :]
+    image_array_cropped= crop_image(image_array)
+    transformed_image_array = image_array_cropped[None, :, :, :]
     # This model currently assumes that the features of the model are just the images. Feel free to change this.
     steering_angle = float(model.predict(transformed_image_array, batch_size=1))
     # The driving model currently just outputs a constant throttle. Feel free to edit this.
