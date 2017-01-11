@@ -16,9 +16,10 @@ I'd like to thank this paper from NVIDIA [NVIDIA paper](http://images.nvidia.com
 The training data originally had a size of 160x320x3, since each image has information that is not relevant for driving, like the sky or the trees. I cropped the top 1/5 of the image and in the bottom I cropped 25 pixels to remove the hood of the car.
 
 The following image is an example of the results.
+
 ![Original Image](images/original.png)
 
-![Crop Image](images/original.png)
+![Crop Image](images/crop.png)
 
 
 ## Deployment
