@@ -12,19 +12,16 @@ from PIL import Image
 from PIL import ImageOps
 from flask import Flask, render_template
 from io import BytesIO
+from time import gmtime, strftime
 
 from keras.models import model_from_json
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array
+col, row = 200,66
 
-def crop_image(image):
-    #New sizes for image, suggested the Vivek in here 
-    #https://chatbotslife.com/using-augmentation-to-mimic-human-driving-496b569760a9#.n2mwq1z33
-    col, row = 200,66
-    
+def crop_image(image):    
     shape = image.shape
-    
     #Cut off the sky from the original picture
-    crop_up = shape[0]/3
+    crop_up = shape[0]/5
     
     #Cut off the front of the car
     crop_down = shape[0]-25
@@ -42,6 +39,7 @@ prev_image_array = None
 
 @sio.on('telemetry')
 def telemetry(sid, data):
+    images=[]
     # The current steering angle of the car
     steering_angle = data["steering_angle"]
     # The current throttle of the car
@@ -52,7 +50,9 @@ def telemetry(sid, data):
     imgString = data["image"]   
     image = Image.open(BytesIO(base64.b64decode(imgString)))
     image_array = np.asarray(image)
+    image = cv2.cvtColor(image_array,cv2.COLOR_BGR2RGB)
     image_array_cropped= crop_image(image_array)
+
     transformed_image_array = image_array_cropped[None, :, :, :]
     # This model currently assumes that the features of the model are just the images. Feel free to change this.
     steering_angle = float(model.predict(transformed_image_array, batch_size=1))
@@ -60,6 +60,16 @@ def telemetry(sid, data):
     throttle = 0.12
     print(steering_angle, throttle)
     send_control(steering_angle, throttle)
+    time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+    time.replace(':','_').replace('-','_')
+    name = 'IMG_realtime/image'+ time +'.jpg'
+    cv2.imwrite(name,image)
+
+    return images
+
+
+
+	
 
 
 @sio.on('connect')
