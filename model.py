@@ -5,7 +5,7 @@ import csv
 import math
 from pathlib import Path
 import pandas as pd
-
+import random
 
 import tensorflow as tf
 
@@ -54,9 +54,11 @@ def crop_image(image):
     return image
 
 
-def preprocess_image_training(row_data):
-    
-    angle = row_data['steering']
+def preprocess_image_training(row_data, noise_factor=0.04):
+    #Following the advise of Annie Flippo, to introduce some noise on the angles
+    noise = (random.random() - 0.5) * 2.0 * 1.2 * noise_factor
+    angle = row_data['steering'] * noise
+
     orientation = np.random.choice(['center', 'left', 'right'])
 
     # adjust the steering angle for left anf right cameras
