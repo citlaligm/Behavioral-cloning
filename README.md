@@ -38,12 +38,12 @@ Finally the image was resize to fit the NVIDIA model, the size should be 66x200x
 
 I used the [Lambda](https://keras.io/layers/core/) keras layer to normalize between -0.5 and 0.5
 
-##Augmentation methods##
-#Flip images
+#Augmentation methods##
+##Flip images
 In the track there are more turns to the left than to the right, so in order to avoid a learning biased to turning left. I flipped the images half of the time and since the image is now reverse the angle should be change to the other direction. This can be achieve by multiplying by -1 the original angle.
 
 
-#Recovery with left and right images
+##Recovery with left and right images
 The dataset provided contained the left and right views corresponding to each center image. Using these images and adding a constant, in this case 0.25,  we can teach the model how to recover when going off the road. This constant is added to left views since the car should move to the right to get to the center and for the right view is substracted since the car should move to the left to get to the center.
 
 In adittion of this addition to the angle, I added some noise to the angle so that when the car has to turn the angle has to be a little bigger than what should be. In this case the factor found was 20% more.
@@ -53,7 +53,7 @@ In adittion of this addition to the angle, I added some noise to the angle so th
 
 #Model Architecture
 
-I followed the architecture proposed by [NVIDIA paper](http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf) and [this post](https://chatbotslife.com/using-augmentation-to-mimic-human-driving-496b569760a9#.d779iwp28) . 
+I followed the architecture proposed by [NVIDIA paper](http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf).
 
 In order to implement exctly the model proposed on the paper I did not introduce any Dropout or Maxpooling layer. Furthermore the model is quite simple that it does not need this techniques to avoid overfittig, instead the generation or more data to train the model is the approach taken to prevent overfitting.
 
