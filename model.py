@@ -23,6 +23,7 @@ from keras.layers import Dense, Activation, Dropout, Flatten
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import model_from_json
 import json
+import os.path
 
 
 #new sizes to fit NVIDIA model
@@ -55,7 +56,8 @@ def crop_image(image):
 
 
 def preprocess_image_training(row_data, noise_factor=0.04):
-    #Following the advise of Annie Flippo, to introduce some noise on the angles
+    #Following the advise of Annie Flippo, augment data introducing noise on the angles in the range of 0 and 4%
+    # Increment the steering angle by 20% to make the car more agressive in turns
     noise = (random.random() - 0.5) * 2.0 * 1.2 * noise_factor
     angle = row_data['steering'] * noise
 
@@ -130,7 +132,7 @@ def generator_validation(data):
             
 def save_model(file_JSON,file_Weights, model_obj):
     #Check if an old version of the file exists remove it is if True
-    if Path(file_JSON).is_file():
+    if os.path.isfile(file_JSON):
         os.remove(file_JSON)
     json_string = model_obj.to_json()
     
@@ -138,9 +140,9 @@ def save_model(file_JSON,file_Weights, model_obj):
         json.dump(json_string, f)
     
     #Check if an old version of the file exists remove it if True
-    if Path(file_Weights).is_file():
+    if os.path.isfile(file_Weights):
         os.remove(file_Weights)
-    model_obj.save_weights(file_Weights)         
+    model_obj.save_weights(file_Weights)       
     
     
 

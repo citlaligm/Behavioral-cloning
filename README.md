@@ -1,7 +1,7 @@
 # Behavioral Cloning#
 
 ##Overview
-This project aims to develop and train a deep learning network that learns how to drive a car around a track. The training data was provided by the Udacity team, since the data was limited a image generator was implemented to generate more data. When the model was ready I tested it running the simulator in autonomus mode, the car succesfully drove around the track.
+This project aims to develop and train a deep learning network that learns how to drive a car around a track. The training data was provided by the Udacity team, since the data was limited an image generator was implemented to generate more data. When the model was ready I tested it running the simulator in autonomus mode, the car succesfully drove around the track.
 
 The main parts of the code:
 
@@ -28,7 +28,7 @@ After removing sky and hood
 
 ![Crop Image](images/crop.png)
 
-Finally the image was resize to fit the NVIDIA model, the size should be 66x200x3.
+Finally the image was resized to fit the NVIDIA model, the size should be 66x200x3.
 
 ![Nvidia Image](images/nvidia.png)u
 
@@ -37,18 +37,18 @@ Finally the image was resize to fit the NVIDIA model, the size should be 66x200x
 
 ## Normalization of data ##
 
-I used the [Lambda](https://keras.io/layers/core/) keras layer to normalize between -0.5 and 0.5
+I used the [Lambda](https://keras.io/layers/core/) keras layer to normalize.
 
 #Augmentation methods##
 ##Flip images
-In the track there are more turns to the left than to the right, so in order to avoid a learning biased to turning left. I flipped the images half of the time and since the image is now reverse the angle should be change to the other direction. This can be achieve by multiplying by -1 the original angle.
+In the track there are more turns to the left than to the right, so in order to avoid a learning biased to turning left. I flipped the images half of the time and since the image is now reverse the angle should be changed to the other direction. This can be achieve by multiplying by -1 the original angle.
 
 
 ##Recovery with left and right images
 The dataset provided contained the left and right views corresponding to each center image. Using these images and adding a constant, in this case 0.25,  we can teach the model how to recover when going off the road. This constant is added to left views since the car should move to the right to get to the center and for the right view is substracted since the car should move to the left to get to the center.
 
-In adittion of this addition to the angle, I added some noise to the angle so that when the car has to turn the angle has to be a little bigger than what should be. In this case the factor found was 20% more.
-
+##Noise in the steering angle
+I added some random noise to the steering angle in the training data this with the purpose of generating more images with the different angles, this noise is in the range of 0 to 4% . 
 
 
 
@@ -56,31 +56,43 @@ In adittion of this addition to the angle, I added some noise to the angle so th
 
 I followed the architecture proposed by [NVIDIA paper](http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf).
 
-In order to implement exctly the model proposed on the paper I did not introduce any Dropout or Maxpooling layer. Furthermore the model is quite simple that it does not need this techniques to avoid overfittig, instead the generation or more data to train the model is the approach taken to prevent overfitting.
+In order to implement exactly the model proposed on the paper I did not introduce any Dropout or Maxpooling layer. Furthermore the model is quite simple that it does not need this techniques to avoid overfittig, instead the generation or more data to train the model is the approach taken to prevent overfitting.
+
+            ![Architecture](images/archi.png)
 
 0. Input image of size 66x200x3
 1. **Layer 1** : Lambda layer with a lambda function to normalize data 
 2. **Layer 2** : Convolutional layer using 24 of size 5x5 filters followed by ELU activation
 3. **Layer 3** : Convolutional layer using 36 of size 5x5 filters followed by ELU activation
 4. **Layer 4** : Convolutional layer using 48 of size 5x5 filters followed by ELU activation
-5. **Layer 5** : Convolutional layer using 64 of size 3x3 filtersfollowed by ELU activation
-6. **Layer 6** : Convolutional layer using 64 of size 3x3 filtersfollowed by ELU activation
-7. **Layer 7** : Convolutional layer using 64 of size 3x3 filtersfollowed by ELU activation
+5. **Layer 5** : Convolutional layer using 64 of size 3x3 filters followed by ELU activation
+6. **Layer 6** : Convolutional layer using 64 of size 3x3 filters followed by ELU activation
+7. **Layer 7** : Convolutional layer using 64 of size 3x3 filters followed by ELU activation
 8. **Layer 8** : Flatten layer
 9. **Layer 9**: Fully connected layer with 1164 neurons
-10. **Layer 10** : Fully connected layer with 100 neurons
+10.**Layer 10** : Fully connected layer with 100 neurons
 11. **Layer 11** : Fully connected layer with 50 neurons
 12. **Output** : Angle predicted
 
-![Architecture](images/archi.png)
+
+#Validation 
+I split the dataset in 80% for the training data and 20% for the validation data. Since the the performance of the model is tested on how well or bad can drive around the track I did not split the dataset for testing.
+
 
 #Training - Data generator
-It is desirable to have as much data as possible to train the model but as we can imagine we cannot create a lot data, store it and then read it all at once. So a image generator was implemented to produce more data on the fly, later give a batch of this data to the model and then take a new batch of new data. 
+It is desirable to have as much data as possible to train the model but as we can imagine we cannot create a lot data, store it and then read it all at once. So an image generator was implemented to produce more data on the fly, later give a batch of this data to the model and then take a new batch of new data. 
 
 
-'Fit_generator' from keras was used to train the model using a python generator that passes daa in batches of 256 images trained for 10 epochs at each epoch 20,224 new images were created using the augmentation describe above. The output of the generator is an image and its correponding angle.
+'Fit_generator' from keras was used to train the model using a python generator that passes data in batches of 256 images trained for 10 epochs at each epoch 20,224 new images were created using the augmentation describe above. The output of the generator is an image and its correponding angle.
 
 I used an Adam optimizer with learning rate of 0.0001 
 
-#Adaptative throttle.
-When the simulator was running at same time wiht other programs opened in my computer, the model failed at some sharp turns, this may be due to hardware limitations. For that reason I implementented I function that consider the angle for determining the speed. When the car is turning the speed slows down and when the car is going straight it speeds up.
+
+#Solution to problems encountered
+
+##Turns
+At the some point my car was driving around the track without problems but in some sharp turns did't turn enough to pass the curve. First I tried to add more images of those spots to the training data but it didn't help much. In order to make the response of the car more aggresive when it encounter turns, I increase the steering angle of the training data by 20%. 
+
+##Adaptative throttle.
+When the simulator was running at same time wiht other programs opened in my computer, the model failed at some sharp turns, this may be due to hardware limitations. For that reason I implemented a function that uses the steering to determining the speed. So the larger the steering angle the lower the speed.
+
