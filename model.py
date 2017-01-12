@@ -187,6 +187,7 @@ batch_size = 256
 
 best_model = 0
 best_validation = 1000
+validations_score = []
 
 
 for i in range(10):
@@ -204,12 +205,22 @@ for i in range(10):
     val_loss = history.history['val_loss'][0]
     if val_loss < best_validation:
         best_model = i
-        val_best = val_loss
+        best_validation = val_loss
         file_JSON = 'model_best.json'
         file_Weights = 'model_best.h5'
         save_model(file_JSON,file_Weights,model)
+
+    validations_score.append([i, val_loss])
+
+
+with open('log_val.csv', 'w', newline='') as outfile:
+    datawriter = csv.writer(outfile, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    for row in validations_score:  
+            new_row = list(row)
+            datawriter.writerow(new_row)
         
-print('Best model found at iteration # ' + str(best_model))
+        
+print('Best # ' + str(best_model))
 print('Best Validation score : ' + str(np.round(best_validation,4)))
 
 
