@@ -95,3 +95,9 @@ At the some point my car was driving around the track without problems but in so
 ##Adaptative throttle.
 When the simulator was running at same time wiht other programs opened in my computer, the model failed at some sharp turns, this may be due to hardware limitations. For that reason I implemented a function that uses the steering to determining the speed. So the larger the steering angle the lower the speed.
 
+
+
+##Video
+
+You can watch the video of my car driving around the track [here](https://youtu.be/qul0ABQCy4E).
+
