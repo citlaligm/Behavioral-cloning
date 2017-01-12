@@ -30,7 +30,7 @@ After removing sky and hood
 
 Finally the image was resized to fit the NVIDIA model, the size should be 66x200x3.
 
-![Nvidia Image](images/nvidia.png)u
+![Nvidia Image](images/nvidia.png)
 
 
 
@@ -58,7 +58,9 @@ I followed the architecture proposed by [NVIDIA paper](http://images.nvidia.com/
 
 In order to implement exactly the model proposed on the paper I did not introduce any Dropout or Maxpooling layer. Furthermore the model is quite simple that it does not need this techniques to avoid overfittig, instead the generation or more data to train the model is the approach taken to prevent overfitting.
 
-            ![Architecture](images/archi.png)
+
+![Architecture](images/archi.png)
+
 
 0. Input image of size 66x200x3
 1. **Layer 1** : Lambda layer with a lambda function to normalize data 
@@ -70,7 +72,7 @@ In order to implement exactly the model proposed on the paper I did not introduc
 7. **Layer 7** : Convolutional layer using 64 of size 3x3 filters followed by ELU activation
 8. **Layer 8** : Flatten layer
 9. **Layer 9**: Fully connected layer with 1164 neurons
-10.**Layer 10** : Fully connected layer with 100 neurons
+10. **Layer 10** : Fully connected layer with 100 neurons
 11. **Layer 11** : Fully connected layer with 50 neurons
 12. **Output** : Angle predicted
 
