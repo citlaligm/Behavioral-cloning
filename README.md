@@ -48,7 +48,7 @@ In the track there are more turns to the left than to the right, so in order to 
 The dataset provided contained the left and right views corresponding to each center image. Using these images and adding a constant, in this case 0.25,  we can teach the model how to recover when going off the road. This constant is added to left views since the car should move to the right to get to the center and for the right view is substracted since the car should move to the left to get to the center.
 
 ##Noise in the steering angle
-I added some random noise to the steering angle in the training data this with the purpose of generating more images with the different angles, this noise is in the range of 0 to 4% . 
+I added some random noise to the steering angle in the training data, this with the purpose of aumenting the number of right responses to each image. The noise is in the range of 0 to 4% . 
 
 
 
@@ -74,9 +74,6 @@ In order to implement exactly the model proposed on the paper I did not introduc
 11. **Layer 11** : Fully connected layer with 50 neurons
 12. **Output** : Angle predicted
 
-
-#Validation 
-I split the dataset in 80% for the training data and 20% for the validation data. Since the the performance of the model is tested on how well or bad can drive around the track I did not split the dataset for testing.
 
 
 #Training - Data generator
