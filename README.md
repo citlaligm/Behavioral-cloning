@@ -39,8 +39,8 @@ Finally the image was resized to fit the NVIDIA model, the size should be 66x200
 
 I used the [Lambda](https://keras.io/layers/core/) keras layer to normalize.
 
-## Augmentation methods
-##Flip images
+# Augmentation methods
+## Flip images
 In the track there are more turns to the left than to the right, so in order to avoid a learning biased to turning left. I flipped the images half of the time and since the image is now reverse the angle should be changed to the other direction. This can be achieve by multiplying by -1 the original angle.
 
 
