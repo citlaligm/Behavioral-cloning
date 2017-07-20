@@ -1,4 +1,4 @@
-# Behavioral Cloning#
+# Behavioral Cloning
 
 ##Overview
 This project aims to develop and train a deep learning network that learns how to drive a car around a track. The training data was provided by the Udacity team, since the data was limited an image generator was implemented to generate more data. When the model was ready I tested it running the simulator in autonomus mode, the car succesfully drove around the track.
